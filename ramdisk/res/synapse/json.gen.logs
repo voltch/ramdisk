@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:LOGS,
+    name:Logs,
     elements:[
 	{ SDescription:{
 		description:"To report any issue with the kernel, you should share the zip file of logs created by using below button. This will put logcat, dmesg, last_kmsg & other relevant information into one zip file which will be used only for debug purposes."
@@ -17,12 +17,30 @@ cat << CTAG
 	{ SSpacer:{
 		height:2
 	}},
+	{ SPane:{
+		title:"Android Logger",
+		description:"You must set 'Enabled' or 'Auto-Suspend' to save the latest logcat (app/system debug output) to file. Auto-Suspend mode will enable logcat whilst screen-ON & auto disable whilst screen-OFF."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Enable Android logger",
+		description:" ",
+		default:2,
+		action:"generic /sys/module/logger/parameters/log_mode",
+		values:{ 0:"Enabled", 1:"Auto-Suspend", 2:"Disabled"
+		}
+	}},
+	{ SSpacer:{
+		height:1
+	}},
 	{ SButton:{
 		label:"Save logcat",
 		action:"log logcat"
 	}},
 	{ SSpacer:{
-		height:2
+		height:1
 	}},
 	{ SButton:{
 		label:"Save dmesg",

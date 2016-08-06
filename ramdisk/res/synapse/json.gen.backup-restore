@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:BACKUP RESTORE,
+    name:Backup/Restore,
     elements:[
 	{ SPane:{
 		title:"Profile"
@@ -14,7 +14,7 @@ cat << CTAG
 		title:"Profile Name",
 		description:"",
 		default:"None",
-		action:"backup /res/synapse/prom/bck_prof",
+		action:"backup /res/synapse/volt/bck_prof",
 	}},
 	{ SSpacer:{
 		height:1
@@ -32,7 +32,7 @@ cat << CTAG
 			{
 				on:APPLY,
 				do:[ REFRESH, APPLY ],
-				to:"backup /res/synapse/prom/bck_prof"
+				to:"backup /res/synapse/volt/bck_prof"
 			}
 		]
 	}},
@@ -53,7 +53,7 @@ cat << CTAG
 			{
 				on:APPLY,
 				do:[ REFRESH, APPLY ],
-				to:"backup /res/synapse/prom/bck_prof"
+				to:"backup /res/synapse/volt/bck_prof"
 			}
 		]
 	}},
@@ -104,7 +104,7 @@ cat << CTAG
 		title:"Kernel Name",
 		description:"",
 		default:"None",
-		action:"backup /res/synapse/prom/bck_kernel",
+		action:"backup /res/synapse/volt/bck_kernel",
 	}},
 	{ SSpacer:{
 		height:1
@@ -122,7 +122,7 @@ cat << CTAG
 			{
 				on:APPLY,
 				do:[ REFRESH, APPLY ],
-				to:"backup /res/synapse/prom/bck_kernel"
+				to:"backup /res/synapse/volt/bck_kernel"
 			}
 		]
 	}},

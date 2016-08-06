@@ -1,4 +1,4 @@
-# By UpInTheAir for SkyHigh kernels
+# By UpInTheAir for volt kernels
 
 BB=/system/xbin/busybox;
 
@@ -8,7 +8,7 @@ fi;
 
 case $1 in
 usb_mode)
-  P=/res/synapse/prom/mass_storage
+  P=/res/synapse/volt/mass_storage
   if [ ! -z "$2" ]; then
   if [ "$2" == DEFAULT ]; then
     echo 0 > $P

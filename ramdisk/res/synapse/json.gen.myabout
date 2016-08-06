@@ -1,18 +1,13 @@
-#!/sbin/busybox sh
+#!/system/bin/sh
 
 cat << CTAG
 {
-    name:"ABOUT",
+    name:"About",
     elements:[
-    	{ SLiveLabel:{
-		description:"\n",
-		refresh:10000000,
-		action:"echo Hello"
-	}},
 	{ SLiveLabel:{
 		refresh:10000000,
 		style:"bold",
-		action:"echo Welcome to the S7 Prometheus kernel"
+		action:"echo Welcome to VoLTaqe Kernel !"
 	}},
     	{ SLiveLabel:{
 		refresh:10000000,
@@ -21,100 +16,102 @@ cat << CTAG
     	{ SLiveLabel:{
 		refresh:10000000,
 		style:"bold",
-		action:"echo lyapota"
+		action:"echo VoLTaqe"
 	}},
 	{ SSpacer:{
-		height:2
+		height:1
+	}},
+	{ SPane:{
+		title:"ASV Summary",
+		description:"Values: from 0 (Lowest) to 15 (Highest). The higher the ASV, the higher frequencies your device can run and lower voltages"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"show asv"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Kernel Version"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default version"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Build"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default build"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Build Date"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default date"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Baseband"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default baseband"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Bootloader"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default bootloader"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Busybox Version"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default busybox_version"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Superuser Version"
+	}},
+	{ SLiveLabel:{
+		refresh:10000,
+		action:"default su_version"
+	}},
+	{ SSpacer:{
+		height:1
 	}},
 	{ SPane:{
 		title:"Up Time:"
 	}},
-	{ SDescription:{
-		description:""
+	{ SSpacer:{
+		height:1
 	}},
 	{ SLiveLabel:{
 		refresh:1500,
 		action:"live LiveUpTime"
 	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"CPU Temperature:"
-	}},
-	{ SLiveLabel:{
-		refresh:1000,
-		action:"live temp"
-	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"Memory:"
-	}},
-	{ SLiveLabel:{
-		refresh:3000,
-		style:italic,
-		action:"live LiveMemory"
-	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"Battery Temperature:"
-	}},
-	{ SLiveLabel:{
-		refresh:3000,
-		style:italic,
-		action:"live batttemp"
-	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"Battery Health:"
-	}},
-	{ SLiveLabel:{
-		refresh:3000,
-		style:italic,
-		action:"live batthealth"
-	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"Battery Status:"
-	}},
-	{ SLiveLabel:{
-		refresh:3000,
-		style:italic,
-		action:"live battstatus"
-	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"Battery Capacity:"
-	}},
-	{ SLiveLabel:{
-		refresh:3000,
-		style:italic,
-		action:"live battcapa"
-	}},
-	{ SSpacer:{
-		height:2
-	}},
-	{ SPane:{
-		title:"Battery Voltage:"
-	}},
-	{ SLiveLabel:{
-		refresh:3000,
-		style:italic,
-		action:"live battvoltnow"
-	}},
-    ]
-}
-CTAG
     ]
 }
 CTAG

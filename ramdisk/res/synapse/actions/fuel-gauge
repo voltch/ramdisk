@@ -1,16 +1,7 @@
-# By UpInTheAir for SkyHigh kernels
 
 BB=/system/xbin/busybox;
+P=/sys/devices/battery
 
-if [ -d "/sys/devices/battery.54" ]; then
-	P=/sys/devices/battery.54
-elif [ -d "/sys/devices/battery.53" ]; then
-	P=/sys/devices/battery.53
-elif [ -d "/sys/devices/battery.52" ]; then
-	P=/sys/devices/battery.52
-elif [ -d "/sys/devices/battery.51" ]; then
-	P=/sys/devices/battery.51
-fi;
 
 case $1 in
 fuel-gauge)

@@ -1,14 +1,4 @@
-if [ -d "/sys/devices/battery" ]; then
-	P=/sys/devices/battery
-elif [ -d "/sys/devices/battery.54" ]; then
-	P=/sys/devices/battery.54
-elif [ -d "/sys/devices/battery.53" ]; then
-	P=/sys/devices/battery.53
-elif [ -d "/sys/devices/battery.52" ]; then
-	P=/sys/devices/battery.52
-elif [ -d "/sys/devices/battery.51" ]; then
-	P=/sys/devices/battery.51
-fi;
+P=/sys/devices/battery
 
 case $(($(cat $P/power_supply/battery/batt_charging_source))) in
 

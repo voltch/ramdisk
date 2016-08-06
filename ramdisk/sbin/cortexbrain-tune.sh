@@ -14,15 +14,14 @@
 # This script must be activated after init start =< 25sec or parameters from /sys/* will not be loaded.
 
 # read setting from profile to boot value
-cortexbrain_background_process=$(cat /res/synapse/prom/cortexbrain_background_process);
-cortexbrain_kernel=$(cat /res/synapse/prom/cortexbrain_kernel);
-cortexbrain_system=$(cat /res/synapse/prom/cortexbrain_system);
-cortexbrain_wifi_auto=$(cat /res/synapse/prom/cortexbrain_wifi_auto);
-cortexbrain_media_manager=$(cat /res/synapse/prom/cortexbrain_media_manager);
-cortexbrain_nmi_auto=$(cat /res/synapse/prom/cortexbrain_nmi_auto);
-cortexbrain_doze_auto=$(cat /res/synapse/prom/cortexbrain_doze_auto);
-cortexbrain_alpm_auto=$(cat /res/synapse/prom/cortexbrain_alpm_auto);
-cortexbrain_lux=$(cat /res/synapse/prom/cortexbrain_lux);
+cortexbrain_background_process=$(cat /res/synapse/volt/cortexbrain_background_process);
+cortexbrain_kernel=$(cat /res/synapse/volt/cortexbrain_kernel);
+cortexbrain_system=$(cat /res/synapse/volt/cortexbrain_system);
+cortexbrain_wifi_auto=$(cat /res/synapse/volt/cortexbrain_wifi_auto);
+cortexbrain_media_manager=$(cat /res/synapse/volt/cortexbrain_media_manager);
+cortexbrain_doze_auto=$(cat /res/synapse/volt/cortexbrain_doze_auto);
+cortexbrain_alpm_auto=$(cat /res/synapse/volt/cortexbrain_alpm_auto);
+cortexbrain_lux=$(cat /res/synapse/volt/cortexbrain_lux);
 
 # ==============================================================
 # GLOBAL VARIABLES || without "local" also a variable in a function is global
@@ -37,6 +36,10 @@ fi;
 FILE_NAME=$0;
 PIDOFCORTEX=$$;
 
+DB="/data/data/com.android.providers.settings/databases";
+DB_SYNAPSE="/data/data/com.af.synapse/databases";
+sqlite="/system/xbin/sqlite3";
+
 # Check if dumpsys exist in ROM
 if [ -e /system/bin/dumpsys ]; then
 	DUMPSYS=1;
@@ -46,15 +49,14 @@ fi;
 
 READ_CONFIG()
 {
-cortexbrain_background_process=$(cat /res/synapse/prom/cortexbrain_background_process);
-cortexbrain_kernel=$(cat /res/synapse/prom/cortexbrain_kernel);
-cortexbrain_system=$(cat /res/synapse/prom/cortexbrain_system);
-cortexbrain_wifi_auto=$(cat /res/synapse/prom/cortexbrain_wifi_auto);
-cortexbrain_media_manager=$(cat /res/synapse/prom/cortexbrain_media_manager);
-cortexbrain_nmi_auto=$(cat /res/synapse/prom/cortexbrain_nmi_auto);
-cortexbrain_doze_auto=$(cat /res/synapse/prom/cortexbrain_doze_auto);
-cortexbrain_alpm_auto=$(cat /res/synapse/prom/cortexbrain_alpm_auto);
-cortexbrain_lux=$(cat /res/synapse/prom/cortexbrain_lux);
+cortexbrain_background_process=$(cat /res/synapse/volt/cortexbrain_background_process);
+cortexbrain_kernel=$(cat /res/synapse/volt/cortexbrain_kernel);
+cortexbrain_system=$(cat /res/synapse/volt/cortexbrain_system);
+cortexbrain_wifi_auto=$(cat /res/synapse/volt/cortexbrain_wifi_auto);
+cortexbrain_media_manager=$(cat /res/synapse/volt/cortexbrain_media_manager);
+cortexbrain_doze_auto=$(cat /res/synapse/volt/cortexbrain_doze_auto);
+cortexbrain_alpm_auto=$(cat /res/synapse/volt/cortexbrain_alpm_auto);
+cortexbrain_lux=$(cat /res/synapse/volt/cortexbrain_lux);
 log -p i -t "$FILE_NAME" "*** CONFIG ***: READED";
 }
 
@@ -93,14 +95,64 @@ KERNEL_TWEAKS;
 SYSTEM_TWEAKS()
 {
 	if [ "$cortexbrain_system" == "1" ]; then
-		setprop windowsmgr.max_events_per_sec 240;
+	# enable Hardware Rendering
+	$PROP video.accelerate.hw 1;
+	$PROP debug.performance.tuning 1;
+	$PROP debug.sf.hw 1;
+	$PROP persist.sys.use_dithering 1;
+	$PROP persist.sys.ui.hw true; # ->reported as problem maker in some roms.
 
-		log -p i -t "$FILE_NAME" "*** SYSTEM_TWEAKS ***: enabled";
+	# render UI with GPU
+	$PROP hwui.render_dirty_regions false;
+	$PROP profiler.force_disable_err_rpt 1;
+	$PROP profiler.force_disable_ulog 1;
+
+	# more Tweaks
+	$PROP persist.adb.notify 0;
+	$PROP pm.sleep_mode 1;
+        $PROP wifi.supplicant_scan_interval 120;
+	$PROP windowsmgr.max_events_per_sec 240;
+
+		log -p i -t $FILE_NAME "*** SYSTEM_TWEAKS ***: enabled";
+		return 0;
 	else
-		echo "system_tweaks disabled";
+		return 1;
 	fi;
 }
 SYSTEM_TWEAKS;
+
+ENABLE_CORES()
+{
+	if [ -e /sys/power/cpuhotplug/enabled ]; then
+		echo "1" > /sys/power/cpuhotplug/enabled;
+		echo "8" > /sys/power/cpuhotplug/max_online_cpu
+		echo "1" > /sys/power/cpuhotplug/min_online_cpu
+	fi;
+}
+
+DISABLE_CORES()
+{
+	if [ -e /sys/power/cpuhotplug/enabled ]; then
+		echo "1" > /sys/power/cpuhotplug/enabled;
+		echo "4" > /sys/power/cpuhotplug/max_online_cpu
+		echo "1" > /sys/power/cpuhotplug/min_online_cpu
+	fi;
+}
+
+DVFS_EGL_MODE()
+{
+	SYNAPSE_EGL_VALUE=`cat /res/synapse/volt/dvfs_egl`;
+	CPUCLKMX=`$sqlite $DB_SYNAPSE/actionValueStore "SELECT value FROM action_value WHERE key = 'cpu /sys/devices/system/cpu/cpu4/cpufreq/volt_max_freq';"`;
+	CPUCLKMIN=`$sqlite $DB_SYNAPSE/actionValueStore "SELECT value FROM action_value WHERE key = 'cpu /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq';"`;
+	if [ "$SYNAPSE_EGL_VALUE" != "0" ]; then
+	chmod 0777 /sys/devices/system/cpu/cpu4/cpufreq/volt_max_freq;
+	chmod 0777 /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq;
+
+	echo $CPUCLKMX > /sys/devices/system/cpu/cpu4/cpufreq/volt_max_freq;
+	echo $CPUCLKMIN > /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq;
+	fi;
+
+}
 
 # ==============================================================
 # SCREEN-FUNCTIONS
@@ -138,24 +190,6 @@ MEDIA_MANAGER()
 		log -p i -t "$FILE_NAME" "*** MEDIA_MANAGER ***: ${state}";
 	else
 		log -p i -t "$FILE_NAME" "*** MEDIA_MANAGER: User-Mode ***";
-	fi;
-}
-
-NMI_AUTO()
-{
-	if [ "$cortexbrain_nmi_auto" == "2" ]; then
-
-		local state="$1";
-
-		if [ "${state}" == "awake" ]; then
-			echo "1" > /proc/sys/kernel/nmi_watchdog;
-		elif [ "${state}" == "sleep" ]; then
-			echo "0" > /proc/sys/kernel/nmi_watchdog;
-		fi;
-
-		log -p i -t "$FILE_NAME" "*** NMI_AUTO ***: $state ***: done";
-	else
-		log -p i -t "$FILE_NAME" "*** NMI_AUTO: Disabled ***";
 	fi;
 }
 
@@ -236,9 +270,10 @@ AWAKE_MODE()
 
 	MEDIA_MANAGER "awake";
 
-	NMI_AUTO "awake";
+	DVFS_EGL_MODE;
 
 	DOZE_AUTO "awake";
+
 
 	ALPM_AUTO "awake";
 
@@ -279,7 +314,6 @@ SLEEP_MODE()
 
 	MEDIA_MANAGER "sleep";
 
-	NMI_AUTO "sleep";
 
 	if [ "$DUMPSYS" == 1 ]; then
 		# Check the call state, CALL_STATE_IDLE (not on call) = 0, CALL_STATE_RINGING = 1, CALL_STATE_OFFHOOK (on call) = 2
@@ -299,11 +333,15 @@ SLEEP_MODE()
 
 		DOZE_AUTO "sleep";
 
+		DVFS_EGL_MODE;
+
 		ALPM_AUTO "sleep";
 
 		log -p i -t "$FILE_NAME" "*** SLEEP mode ***";
 
 	else
+
+		CPU_CORE_CONTROL "sleep";
 
 		log -p i -t "$FILE_NAME" "*** On Call! SLEEP aborted! ***";
 

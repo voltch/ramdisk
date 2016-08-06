@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:USB,
+    name:Usb,
     elements:[
 	{ SPane:{
 		title:"USB Mode",

@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:POWER SUSPEND,
+    name:PowerSuspend,
     elements:[
 	{ SPane:{
 		title:"PowerSuspend",
@@ -29,13 +29,6 @@ cat << CTAG
 		values:{
 			0:"Disabled", 1:"Enabled"
 		}
-	}},
-	{ SSpacer:{
-		height:1
-	}},
-	{ SButton:{
-		label:"PowerSuspend version",
-		action:"show susp"
 	}},
 	{ SSpacer:{
 		height:1

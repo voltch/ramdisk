@@ -1,10 +1,8 @@
 #!/system/bin/sh
 
-BB=/system/xbin/busybox;
-
 cat << CTAG
 {
-    name:SCREEN,
+    name:Screen,
     elements:[
 	{ SLiveLabel:{
 		title:"Lux",
@@ -45,8 +43,50 @@ cat << CTAG
 		title:"Lux threshold",
 		description:"Max ambient light value required to enable 'Auto' LCD ALPM. Requires CortexBrain ENABLED !\n",
 		min:0, max:200, unit:" lx", step:1,
-		default:$(cat /res/synapse/prom/cortexbrain_lux),
-		action:"hmp /res/synapse/prom/cortexbrain_lux"
+		default:$(cat /res/synapse/volt/cortexbrain_lux),
+		action:"hmp /res/synapse/volt/cortexbrain_lux"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Sweep-2-Sleep",
+		description:"Allows you to turn the screen off by swiping the screen just above the HOME key from one edge to the other in either direction."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Enable Sweep-2-Sleep",
+		description:"NOTE: Ensure PowerSuspend driver 'State' is DISABLED\n",
+		default:0,
+		action:"generic /sys/sweep2sleep/sweep2sleep",
+		values:{
+			0:"Disabled", 1:"Enabled"
+		}
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Enable DoubleTap2Wake",
+		description:"This option only works if powersuspend is set in userspace mode and the Powersuspend state is Enabled\n",
+		default:$(cat /sys/android_touch/doubletap2wake),
+		action:"generic /sys/android_touch/doubletap2wake",
+		values:{
+			`PROF='0:"Disabled", 1:"d2s"'
+			echo $PROF`
+		}
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Disable Touchkeys",
+		description:"Completely disable touchkey events.\n",
+		default:$(echo "$(/res/synapse/actions/touchkey tk_disable)"),
+		action:"touchkey tk_disable",
+		values:[Disabled, Enabled,]
 	}},
 	{ SSpacer:{
 		height:1

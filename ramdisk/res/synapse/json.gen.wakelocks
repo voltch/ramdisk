@@ -4,27 +4,10 @@ BB=/system/xbin/busybox;
 
 cat << CTAG
 {
-    name:WAKELOCKS,
+    name:Wakelocks,
     elements:[
 	{ SDescription:{
 		description:"WARNING: Disabling of wakelocks may have unintended impact on various ROM features, apps or hardware. Leave them default if unsure."
-	}},
-	{ SSpacer:{
-		height:1
-	}},
-	{ SPane:{
-		title:"Google Play Services Battery Drain Fix",
-		description:"SystemUpdateService is basically Google's OTA update service, and when it detects that your phone need and update while running a Custom ROM, it fails and re-runs this check over and over again. It's this wakelock that drains your battery."
-	}},
-	{ SSpacer:{
-		height:1
-	}},
-	{ SOptionList:{
-		title:"Google Play Services",
-		description:"Enable to apply fix on every boot. If Disable, then REBOOT required for stock behaviour.\n",
-		default:$(echo "$(/res/synapse/actions/devtools SystemUpdateService)"),
-		action:"devtools SystemUpdateService",
-		values:[Enabled, Disabled,]
 	}},
 	{ SSpacer:{
 		height:1
@@ -269,14 +252,14 @@ cat << CTAG
 			fi`
 			`if [ -f "/sys/module/sec_battery/parameters/wl_polling" ] || [ -f "/sys/module/max77833_charger/parameters/wl_mains" ] || [ -f "/sys/module/max77833_charger/parameters/wl_wireless" ]; then
 				$BB echo '{ SPane:{
-					title:"Battery polling & max77833_charger_function",
+					title:"Battery polling & max77854_charger_function",
 					description:" "
 				}},'
 				if [ -f "/sys/module/sec_battery/parameters/wl_polling" ]; then
 					MAINS=\`$BB cat /sys/module/sec_battery/parameters/wl_polling\`
 					$BB echo '{ SSeekBar:{
 						title:"Battery polling",
-						description:"Default = 5. Stock = 5 (Lower = lower wake time)\n",
+						description:"Default = 10. Stock = 10 (Lower = lower wake time)\n",
 						unit:"",
 						min:1,
 						max:20,

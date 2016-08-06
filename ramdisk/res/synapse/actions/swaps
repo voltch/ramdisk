@@ -1,5 +1,5 @@
 # Original by halaskk88
-# Modified by UpInTheAir for SkyHigh kernels
+# Modified by UpInTheAir for volt kernels
 
 BB=/system/xbin/busybox;
 SWAP=/dev/block/vnswap0;
@@ -10,7 +10,7 @@ fi;
 
 case $1 in
 vnswap0)
-  P=/res/synapse/prom/vnswap0
+  P=/res/synapse/volt/vnswap0
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
 	$BB swapoff $SWAP > /dev/null 2>&1

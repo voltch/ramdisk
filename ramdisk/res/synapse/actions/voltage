@@ -10,17 +10,14 @@ c0volt)
 gpuvolt)
 	P=/sys/devices/14ac0000.mali/volt_table
 	;;
-mifvolt)
-	P=/sys/class/devfreq/17000010.devfreq_mif/volt_table
-	;;
 intvolt)
 	P=/sys/class/devfreq/17000020.devfreq_int/volt_table
 	;;
+mifvolt)
+	P=/sys/class/devfreq/17000010.devfreq_mif/volt_table
+	;;
 ispvolt)
 	P=/sys/class/devfreq/17000030.devfreq_disp/volt_table
-	;;
-camvolt)
-	P=/sys/class/devfreq/17000040.devfreq_cam/volt_table
 	;;
 esac
 
@@ -40,8 +37,7 @@ writeValue() {
 	gpuvolt)	;&
 	c1volt)		;&
 	c0volt)		;&
-	ispvolt)	;&
-	camvolt)
+	ispvolt)
 		echo "$1" "$2" > $P
 		return
 	esac

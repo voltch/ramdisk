@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:ZRAM,
+    name:ZRam,
     elements:[
 			`if [ -f "/sys/devices/virtual/block/zram0/disksize" ]; then
 			ZRAM=\`$BB cat /sys/devices/virtual/block/zram0/disksize\`;
@@ -41,7 +41,7 @@ cat << CTAG
 			fi`    
 	{ SPane:{
 		title:"panic",
-		description:" Set to zero to have the kernel loop on a panic or auto-reboot after this number of seconds. Default is 1.",
+		description:" Set to zero to have the kernel loop on a panic or auto-reboot after this number of seconds. Default is 5.",
 	}},
 	{ SSeekBar:{
 		max:30,
@@ -55,11 +55,15 @@ cat << CTAG
 		title:"panic_on_oops",
 		description:" Disable to have the kernel continue operations after a software failure. Default is Enabled.",
 	}},
-	{ SCheckBox:{
-		label:"Enable or Disable panic_on_oops",
-		default:`cat /proc/sys/kernel/panic_on_oops`,
+	{ SOptionList:{
+		title:"Panic_on_oops",
+		description:"Enable or Disable panic_on_oops\n",
+		default:1,
 		action:"generic /proc/sys/kernel/panic_on_oops",
-    }},
+		values:{
+			0:"Disabled", 1:"Enabled"
+		}
+	}},
     ]
 }
 CTAG

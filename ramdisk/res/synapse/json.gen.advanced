@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:ADVANCED,
+    name:Advanced,
     elements:[
 	{ SPane:{
 	title:"Kernel Entropy"
@@ -36,17 +36,17 @@ cat << CTAG
 		height:1
 	}},
 	{ SPane:{
-		title:"Exynos Hotplug",
-		description:"If you enable exynos hotplug it will automatically hotplug 2 cores (so min cores online are 6) if you disable hotplugging, all 8 cores will be online."
+		title:"Gentle Fair Sleepers",
+		description:"Sleeper Fairness is a concept used by CFS which treat sleeping/waiting tasks as if they were in a run queue. This implies tasks which spend most of the time waiting for an user input and such will get a fair share of CPU when they need it. Disabling Gentle Fair Sleepers could improve UI responsiveness."
 	}},
 	{ SSpacer:{
 		height:1
 	}},
 	{ SOptionList:{
-		title:"Enable Exynos Hotplug",
+		title:"Enable Gentle Fair Sleepers",
 		description:" ",
-		default:1,
-		action:"generic /sys/power/cpuhotplug/enabled",
+		default:0,
+		action:"generic /sys/kernel/sched/gentle_fair_sleepers",
 		values:{
 			0:"Disabled", 1:"Enabled"
 		}
@@ -84,7 +84,7 @@ cat << CTAG
 		title:"pm_freeze_timeout",
 		description:" ",
 		unit:" sec",
-		max:40000,
+		max:2000,
 		min:1000,
 		step:100,
 		weight:0.001,

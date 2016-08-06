@@ -1,4 +1,4 @@
-# By UpInTheAir for SkyHigh kernels
+# By UpInTheAir for volt kernels
 # Interactive performance, battery & turbo values by g.lewarne @ XDA
 
 BB=/system/xbin/busybox;
@@ -9,7 +9,7 @@ fi;
 
 case $1 in
 hmp)
-  P=/res/synapse/prom/tuning_hmp
+  P=/res/synapse/volt/tuning_hmp
   if [ ! -z "$2" ]; then
   if [ "$2" == Default ]; then
 	chmod 0644 /sys/kernel/hmp/up_threshold;
@@ -46,7 +46,7 @@ hmp)
   fi
   ;;
 interactive_turbo)
-  P=/res/synapse/prom/tuning_interactive_turbo
+  P=/res/synapse/volt/tuning_interactive_turbo
   CPU0=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq);
   CPU4=$(cat /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_min_freq);
   if [ ! -z "$2" ]; then
@@ -71,7 +71,7 @@ interactive_turbo)
   fi
   ;;
 interactive_b)
-  P=/res/synapse/prom/tuning_interactive_b
+  P=/res/synapse/volt/tuning_interactive_b
   if [ ! -z "$2" ]; then
   if [ "$2" == Default ]; then
     echo 0 > $P
@@ -129,7 +129,7 @@ interactive_b)
   fi
   ;;
 interactive_L)
-  P=/res/synapse/prom/tuning_interactive_L
+  P=/res/synapse/volt/tuning_interactive_L
   if [ ! -z "$2" ]; then
   if [ "$2" == Default ]; then
     echo 0 > $P
@@ -184,6 +184,56 @@ interactive_L)
     echo Performance
   elif [ "$copy" == 2 ]; then
     echo Battery
+  fi
+  ;;
+
+  touchboost)
+  P=/res/synapse/volt/tuning_touchboost
+  if [ ! -z $2 ]; then
+  if [ $2 == 0 ]; then
+    echo 0 > $P
+	echo "0" > /sys/class/input_booster/touch/level;
+	echo "0" > /sys/class/input_booster/pen/level;
+  elif [ $2 == 1 ]; then
+    echo 1 > $P
+	echo "1" > /sys/class/input_booster/touch/level;
+	echo "1" > /sys/class/input_booster/pen/level;
+  elif [ $2 == 2 ]; then
+    echo 2 > $P
+	echo "2" > /sys/class/input_booster/touch/level;
+	echo "2" > /sys/class/input_booster/pen/level;
+  elif [ $2 == 3 ]; then
+    echo 3 > $P
+	echo "3" > /sys/class/input_booster/touch/level;
+	echo "3" > /sys/class/input_booster/pen/level;
+  elif [ $2 == 4 ]; then
+    echo 4 > $P
+	echo "4" > /sys/class/input_booster/touch/level;
+	echo "4" > /sys/class/input_booster/pen/level;
+  elif [ $2 == 5 ]; then
+    echo 5 > $P
+	echo "5" > /sys/class/input_booster/touch/level;
+	echo "5" > /sys/class/input_booster/pen/level;
+  elif [ $2 == 8 ]; then
+    echo 6 > $P
+	echo "8" > /sys/class/input_booster/touch/level;
+	echo "8" > /sys/class/input_booster/pen/level;
+  fi; fi
+  copy=`cat $P`
+  if [ $copy == 0 ]; then
+    echo 0
+  elif [ $copy == 1 ]; then
+    echo 1
+  elif [ $copy == 2 ]; then
+    echo 2
+  elif [ $copy == 3 ]; then
+    echo 3
+  elif [ $copy == 4 ]; then
+    echo 4
+  elif [ $copy == 5 ]; then
+    echo 5
+  elif [ $copy == 6 ]; then
+    echo 9
   fi
   ;;
 esac

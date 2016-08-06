@@ -1,4 +1,4 @@
-# By UpInTheAir for SkyHigh kernels
+# By UpInTheAir for volt kernels
 
 BB=/system/xbin/busybox;
 
@@ -11,7 +11,7 @@ fi;
 
 case $1 in
 cifs)
-  P=/res/synapse/prom/cifs
+  P=/res/synapse/volt/cifs
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
     echo 0 > $P
@@ -29,7 +29,7 @@ cifs)
   ;;
 
 ntfs)
-  P=/res/synapse/prom/ntfs
+  P=/res/synapse/volt/ntfs
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
     echo 0 > $P
@@ -47,7 +47,7 @@ ntfs)
   ;;
 
 isofs)
-  P=/res/synapse/prom/isofs
+  P=/res/synapse/volt/isofs
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
     echo 0 > $P
@@ -64,7 +64,7 @@ isofs)
   fi
   ;;
 udf)
-  P=/res/synapse/prom/udf
+  P=/res/synapse/volt/udf
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
     echo 0 > $P
@@ -82,7 +82,7 @@ udf)
   ;;
 
 xpad)
-  P=/res/synapse/prom/xpad
+  P=/res/synapse/volt/xpad
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
     echo 0 > $P

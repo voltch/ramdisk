@@ -2,7 +2,7 @@
 
 cat << CTAG
 {
-    name:CRONTAB,
+    name:Crontab,
     elements:[
 	{ SPane:{
 		title:"Cron Tasks",
@@ -32,20 +32,20 @@ cat << CTAG
 		height:1
 	}},
 	{ SOptionList:{
-		title:"Google Service restart",
-		description:"Restart Google Services to release memory leak and CPU non-stop activity. This is one of the LP RAM leak BUGS where the Service can get stuck, drain RAM, and force CPU to work non-stop. Fix this by restarting the service every 3 hours.\n",
-		default:$(echo "$(/res/synapse/actions/crontab google)"),
-		action:"crontab google",
+		title:"Clean app-cache",
+		description:"Clear app-cache every day at 4:30AM, only if CPU is resting (IDLE)! This can maintain free space on data partition, and clean all old junk folders (clipboard-cache, tombstones, anr logs, dropbox logs & lost+found).\n",
+		default:$(echo "$(/res/synapse/actions/crontab cache)"),
+		action:"crontab cache",
 		values:[Disabled, Enabled,]
 	}},
 	{ SSpacer:{
 		height:1
 	}},
 	{ SOptionList:{
-		title:"Clean app-cache",
-		description:"Clear app-cache every day at 4:30AM, only if CPU is resting (IDLE)! This can maintain free space on data partition, and clean all old junk folders (clipboard-cache, tombstones, anr logs, dropbox logs & lost+found).\n",
-		default:$(echo "$(/res/synapse/actions/crontab cache)"),
-		action:"crontab cache",
+		title:"Google Service restart",
+		description:"Restart Google Services to release memory leak and CPU non-stop activity. This is one of the RAM leak BUGS where the Service can get stuck, drain RAM, and force CPU to work non-stop. Fix this by restarting the service every 3 hours.\n",
+		default:$(echo "$(/res/synapse/actions/crontab google)"),
+		action:"crontab google",
 		values:[Disabled, Enabled,]
 	}},
 	{ SSpacer:{

@@ -9,6 +9,7 @@ ro.secure=0
 ro.allow.mock.location=0
 ro.debuggable=1
 ro.adb.secure=0
+persist.sys.usb.config=mtp,adb
 ro.zygote=zygote64_32
 dalvik.vm.image-dex2oat-Xms=64m
 dalvik.vm.image-dex2oat-Xmx=64m
@@ -16,22 +17,21 @@ dalvik.vm.dex2oat-Xms=64m
 dalvik.vm.dex2oat-Xmx=512m
 ro.dalvik.vm.native.bridge=0
 debug.atrace.tags.enableflags=0
-persist.sys.strict_op_enable=false
-persist.sys.whitelist=/system/etc/whitelist_appops.xml
-persist.sys.usb.config=mtp,adb
-ro.smps.gain.spk=0.8
+
+ro.config.tima=0
+ro.config.dmverity=false
+ro.config.rkp=false
+ro.config.kap_default_on=false
+ro.config.kap=false
+ro.config.knox=false
+ro.securestorage.support=false
+wlan.wfd.hdcp=disable
+ro.hardware.keystore=false
+security.mdpp.mass=false
 
 #
 # BOOTIMAGE_BUILD_PROPERTIES
 #
-ro.bootimage.build.date=Fri Jul 8 10:43:56 KST 2016
-ro.bootimage.build.date.utc=1467942236
-ro.bootimage.build.fingerprint=samsung/graceltexx/gracelte:6.0.1/MMB29K/N930FXXU1APG7:user/test-keys
-
-# SECURITY_PROPERTIES BY J.C.
-ro.config.tima=0
-ro.config.dmverity=false
-ro.config.rkp=false
-ro.config.kap=false
-ro.sec.fle.encryption=false
-ro.securestorage.support=false
+ro.bootimage.build.date=Thu Apr 7 18:49:36 KST 2016
+ro.bootimage.build.date.utc=1460022576
+ro.bootimage.build.fingerprint=samsung/heroltexx/herolte:6.0.1/MMB29K/G930FXXU1APD3:user/test-keys

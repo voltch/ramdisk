@@ -1,7 +1,7 @@
 BB=/system/xbin/busybox;
 
 # SQLite log location
-LOGS=/sdcard/prometheus/Logs/SQLite.txt;
+LOGS=/sdcard/volt/Logs/SQLite.txt;
 
 if [ "$($BB mount | grep rootfs | cut -c 26-27 | grep -c ro)" -eq "1" ]; then
 	$BB mount -o remount,rw /;
@@ -63,7 +63,7 @@ case $1 in
 	fi;
 
 	# Create Log folder on sdcard
-	LOG=/sdcard/prometheus/Logs;
+	LOG=/sdcard/volt/Logs;
 
 	[ ! -d "$LOG" ] && mkdir -p "$LOG";
 	chmod 755 $LOG
@@ -161,7 +161,7 @@ case $1 in
 	echo "init.d folder cleaned";
   ;;
 scr_cache)
-  P=/res/synapse/prom/scr_cache
+  P=/res/synapse/volt/scr_cache
   if [ ! -z "$2" ]; then
   if [ "$2" == 0 ]; then
     echo 0 > $P
@@ -188,7 +188,7 @@ scr_cache)
   fi
   ;;
 spcm_service)
-  P=/res/synapse/prom/spcm_service
+  P=/res/synapse/volt/spcm_service
   if [ ! -z "$2" ]; then
   if [ "$2" == Enabled ]; then
     echo Enabled > $P
@@ -196,32 +196,6 @@ spcm_service)
   elif [ "$2" == Disabled ]; then
     echo Disabled > $P
 	setprop sys.config.spcm_enable false
-  fi; fi
-  copy=$(cat $P)
-  if [ "$copy" == Enabled ]; then
-    echo Enabled
-  elif [ "$copy" == Disabled ]; then
-    echo Disabled
-  fi
-  ;;
-SystemUpdateService)
-  P=/res/synapse/prom/SystemUpdateService
-  if [ ! -z "$2" ]; then
-  if [ "$2" == Enabled ]; then
-    echo Enabled > $P
-	pm enable com.google.android.gms/.update.SystemUpdateActivity
-	pm enable com.google.android.gms/.update.SystemUpdateService
-	pm enable com.google.android.gms/.update.SystemUpdateService$ActiveReceiver
-	pm enable com.google.android.gms/.update.SystemUpdateService$Receiver
-	pm enable com.google.android.gms/.update.SystemUpdateService$SecretCodeReceiver
-	pm enable com.google.android.gsf/.update.SystemUpdateActivity
-	pm enable com.google.android.gsf/.update.SystemUpdatePanoActivity
-	pm enable com.google.android.gsf/.update.SystemUpdateService
-	pm enable com.google.android.gsf/.update.SystemUpdateService$Receiver
-	pm enable com.google.android.gsf/.update.SystemUpdateService$SecretCodeReceiver
-  elif [ "$2" == Disabled ]; then
-    echo Disabled > $P
-	# Nothing to do here
   fi; fi
   copy=$(cat $P)
   if [ "$copy" == Enabled ]; then

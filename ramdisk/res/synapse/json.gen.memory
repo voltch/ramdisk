@@ -4,7 +4,7 @@ BB=/system/xbin/busybox;
 
 cat << CTAG
 {
-    name:MEMORY,
+    name:Memory,
     elements:[
 	{ SLiveLabel:{
 		title:"Memory state",
@@ -16,59 +16,6 @@ cat << CTAG
 		refresh:1000,
 		action:"live LiveSwap"
 	}},
-	{ SSpacer:{
-		height:1
-	}},
-			`if [ -f "/sys/module/lowmemorykiller/parameters/minfree" ]; then
-				$BB echo '{ SPane:{
-					title:"Low Memory Killer",
-					description:"LMK Minfree controls how much memory each app type can hold, and is responsible for memory management for multitasking. All values are multiplied by 256 pages."
-				}},
-				{ SSpacer:{
-					height:1
-				}},
-				{ SOptionList:{
-					title:"LMK Profile",
-					description:"This option will auto-tune LMK minfree values as per selected profile. More aggressive equals more free RAM but more killed apps (less multi-tasking).\n",
-					default:Default,
-					action:"lmk profile",
-					values:[ Low, Medium, Custom, Default, Aggressive, Exterminate,
-					],
-					notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:[ 
-										"lmk 1",
-										"lmk 2",
-										"lmk 3",
-										"lmk 4",
-										"lmk 5",
-										"lmk 6"
-								],
-							}
-					]
-				}},'
-					for LMK in 1 2 3 4 5 6; do
-						$BB echo '{ SSeekBar:{ '
-							case $LMK in
-								1)
-									$BB echo 'title:"Foreground App", description:"The application currenty on the screen and running.\nDefault is 72.\n", default:72' ;;
-								2)
-									$BB echo 'title:"Visible App", description:"The application that is open and running in background.\nDefault is 90.\n", default:90' ;;
-								3)
-									$BB echo 'title:"Secondary Server", description:"This is a service an application needs that is alive and ready.\nDefault is 108.\n", default:108' ;;
-								4)
-									$BB echo 'title:"Hidden App", description:"An idle process that wakes up on application request.\nDefault is 126.\n", default:126' ;;
-								5)
-									$BB echo 'title:"Content Provider", description:"Apps that provide data (content) to the system.\nDefault is 219.\n", default:219' ;;
-								6)
-									$BB echo 'title:"Empty App", description:"Apps closed by the user but ready to run.\nDefault is 317.\n", default:317' ;;
-							esac
-						$BB echo ', action:"lmk '${LMK}'",
-						unit:" MB", min:1, max:350 }},'
-					done
-			fi`
 	{ SSpacer:{
 		height:1
 	}},
@@ -119,7 +66,7 @@ cat << CTAG
 	}},
 	{ SSeekBar:{
 		title:"Scan Delay Interval",
-		description:"Set how long the daemon sleeps before it wakes up and starts scanning memory pages. Default is 0.5.\n",
+		description:"Set how long the daemon sleeps before it wakes up and starts scanning memory pages. Default is 0.1.\n",
 		unit:" sec",
 		step:100,
 		min:0,
@@ -163,6 +110,74 @@ cat << CTAG
 	{ SSpacer:{
 		height:1
 	}},
+	{ SPane:{
+		title:"Dynamic FSYNC",
+		description:"While screen is on file sync is disabled, when screen is off a file sync is called to flush all outstanding writes and restore file sync operation as normal. Increases speed, but a possible decrease in data integrity, also could create reboot and kernel panic. Requires PowerSuspend driver ENABLED."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Enable Dynamic FSYNC",
+		description:" ",
+		default:1,
+		action:"generic /sys/kernel/dyn_fsync/Dyn_fsync_active",
+		values:{
+			0:"Disabled", 1:"Enabled"
+		}
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Dynamic Dirty Page Writeback",
+		description:"Allows to dynamically manage the dirty page writebacks with two different intervals, one when the screen is on and another when the screen is off."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SDescription:{
+		description:"A higher interval we have better performance and less battery consumption, with a very low risk of data loss. Disabling will set the value of Dirty Writeback Suspend for both screen on & off."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Enable dynamic_dirty_writeback",
+		description:" ",
+		default:1,
+		action:"generic /proc/sys/vm/dynamic_dirty_writeback",
+		values:{
+			0:"Disabled", 1:"Enabled"
+		}
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SSeekBar:{
+		title:"Dirty Writeback Active",
+		description:"Time interval between wakeups of the pdflush writeback daemons which write old data out to disk whilst SCREEN is ON.\n",
+		max:5000,
+		min:500,
+		step:500,
+		default:$(cat /proc/sys/vm/dirty_writeback_active_centisecs),
+		action:"generic /proc/sys/vm/dirty_writeback_active_centisecs",
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SSeekBar:{
+		title:"Dirty Writeback Suspend",
+		description:"Time interval between wakeups of the pdflush writeback daemons which write old data out to disk whilst SCREEN is OFF.\n",
+		max:1000,
+		min:100,
+		step:100,
+		default:$(cat /proc/sys/vm/dirty_writeback_suspend_centisecs),
+		action:"generic /proc/sys/vm/dirty_writeback_suspend_centisecs",
+	}},
+	{ SSpacer:{
+		height:1
+	}},
 	{ STitleBar:{
 		title:"Virtual Memory",
 		description:"Tune the operation of the VM subsystem of the Linux kernel and the writeout of dirty data to disk."
@@ -189,7 +204,7 @@ cat << CTAG
 	}},
 	{ SSeekBar:{
 		title:"Adaptive dirty_background_ratio on Suspend / Resume",
-		description:"Dirty background memory buffer, more you set, more memory will be used for write buffer for background operations, buffer is released on need to free RAM. The set value is a percentage of total system memory, the number of pages at which the pdflush background writeback daemon will start writing out dirty data.\nDefault: screen ON is 20 & screen OFF is fixed at 10.\n",
+		description:"Dirty background memory buffer, more you set, more memory will be used for write buffer for background operations, buffer is released on need to free RAM. The set value is a percentage of total system memory, the number of pages at which the pdflush background writeback daemon will start writing out dirty data.\nDefault: screen ON is 20 & screen OFF is fixed at 60.\n",
 		min:0,
 		max:100, 
 		unit:" %", 
@@ -202,7 +217,7 @@ cat << CTAG
 	}},
 	{ SSeekBar:{
 		title:"Adaptive dirty_ratio on Suspend / Resume",
-		description:"Dirty real time memory buffer, more you set, more memory will be used for write buffer for real time operations, buffer is released on need to free RAM. The set value is a percentage of total system memory, the number of pages at which a process which is generating disk writes will itself start writing out dirty data.\nDefault: screen ON is 40 & screen OFF is fixed at 20.\n",
+		description:"Dirty real time memory buffer, more you set, more memory will be used for write buffer for real time operations, buffer is released on need to free RAM. The set value is a percentage of total system memory, the number of pages at which a process which is generating disk writes will itself start writing out dirty data.\nDefault: screen ON is 40 & screen OFF is fixed at 95.\n",
 		min:0,
 		max:100,
 		unit:" %",
@@ -217,7 +232,7 @@ cat << CTAG
 		title:"Enable Drop Caches (Clear VFS Cache After Boot)",
 		description:"This option will force rebuild of file system cache based on actual app usage rather than boot/startup processes. NOTE: This process can take from 1-2 minutes (Enable for better file system read/write performance).\n",
 		default:0,
-		action:"dropcaches /res/synapse/prom/dropcaches_prof",
+		action:"dropcaches /res/synapse/volt/dropcaches_prof",
 		values:{ 0:"Disabled", 1:"Enabled"
 		}
 	}},
@@ -260,47 +275,6 @@ cat << CTAG
 	{ SSpacer:{
 		height:1
 	}},
-		`if [ -f "/sys/devices/virtual/block/zram0/disksize" ]; then
-		ZRAM=\`$BB cat /sys/devices/virtual/block/zram0/disksize\`;
-		ZRAM=$((ZRAM / 1024 / 1024));
-		$BB echo '{ SPane:{
-			title:"Z-RAM",
-			description:"Attempts to increase performance by avoiding paging on physical storage, instead using a compressed virtual device in RAM. Paging takes place in RAM until it is necessary to use the swap space on physical storage."
-		}},
-			{ SSeekBar:{
-				unit:" MB",
-				step:10,
-				min:0,
-				max:2048, 
-				default:'$ZRAM',
-				action:"zram /sys/devices/virtual/block/zram0/disksize"
-			}},'
-		fi`
-		`if [ -f "/sys/block/zram0/comp_algorithm" ]; then
-		CA=\`$BB echo $(/res/synapse/actions/bracket-option /sys/block/zram0/comp_algorithm)\`;
-			$BB echo '{ SOptionList:{
-				title:"Compression Algorithm",
-				description:"Applying a different option will reset Z-RAM. LZ4 algorithm tends to have a faster decompression. More info: <a href='https://code.google.com/p/lz4/'>HERE</a>.",
-				default:'$CA',
-				action:"zram-bracket-option /sys/block/zram0/comp_algorithm",
-				values:['
-					for COMPALG in \`$BB cat /sys/block/zram0/comp_algorithm | $BB sed -e "s/\]//;s/\[//"\`; do
-						echo "\"$COMPALG\",";
-					done;
-				$BB echo '],
-			}},'
-		fi`
-		`if [ -f "/sys/block/zram0/max_comp_streams" ]; then
-		MCS=\`$BB cat /sys/block/zram0/max_comp_streams\`;
-			$BB echo '{ SSeekBar:{
-				title:"Max Compression Streams",
-				description:"Applying a different option will reset Z-RAM. Can have N write operations (depending on size of streams list) executing in parallel.",
-				min:1,	max:10,
-				step:1,
-				default:'$MCS',
-				action:"zram-generic /sys/block/zram0/max_comp_streams",
-			}},'
-		fi` 
     ]
 }
 CTAG

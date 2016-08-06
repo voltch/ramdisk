@@ -1,48 +1,19 @@
 #!/system/bin/sh
 
-MODE=$1
-
 log_print() {
-  echo "($MODE) $1"
-  log -p i -t launch_daemonsu "($MODE) $1"
+  echo $1
+  log -p i -t launch_daemonsu "$1"
 }
-
-if [ `mount | grep " /data " >/dev/null 2>&1; echo $?` -ne 0 ]; then
-  # /data not mounted yet, we will be called again later
-  exit
-fi
-
-if [ `mount | grep " /data " | grep "tmpfs" >/dev/null 2>&1; echo $?` -eq 0 ]; then
-  # /data not mounted yet, we will be called again later
-  exit
-fi
-
-if [ `cat /proc/mounts | grep /su >/dev/null 2>&1; echo $?` -eq 0 ]; then
-  if [ -d "/su/bin" ]; then
-    if [ `ps | grep -v "launch_daemonsu.sh" | grep "daemonsu" >/dev/null 2>&1; echo $?` -eq 0 ]; then
-      # nothing to do here
-      exit
-    fi
-  fi
-fi
-
-setprop sukernel.daemonsu.launch $1
 
 loopsetup() {
   LOOPDEVICE=
   for DEV in $(ls /dev/block/loop*); do
-    if [ `losetup $DEV $1 >/dev/null 2>&1; echo $?` -eq 0 ]; then
+    LS=$(losetup $DEV $1 2>/dev/null)
+    if [ $? -eq 0 ]; then
       LOOPDEVICE=$DEV
       break
     fi
   done
-}
-
-resize() {
-  if [ `ls  -l /data/su.img | grep " 33554432 " >/dev/null 2>&1; echo $?` -eq 0 ]; then
-    e2fsck -p -f /data/su.img
-    resize2fs /data/su.img 96M
-  fi
 }
 
 if [ ! -d "/su/bin" ]; then
@@ -50,20 +21,13 @@ if [ ! -d "/su/bin" ]; then
   REBOOT=false
 
   # copy boot image backups
-  cp -f /cache/stock_boot_* /data/. 2>/dev/null
-
-  if [ -f "/data/su.img" ]; then
-    e2fsck -p -f /data/su.img
-
-    # make sure the image is the right size
-    resize
-  fi
+  cp -f /cache/stock_boot_* /data/.
 
   # newer image in /cache ?
   # only used if recovery couldn't mount /data
   if [ -f "/cache/su.img" ]; then
     log_print "/cache/su.img found"
-    e2fsck -p -f /cache/su.img
+
     OVERWRITE=true
 
     if [ -f "/data/su.img" ]; then
@@ -93,17 +57,20 @@ if [ ! -d "/su/bin" ]; then
           # if loop devices have been setup, mount images
           OK=true
 
-          if [ `mount -t ext4 -o rw,noatime $LOOPDATA /cache/data_img >/dev/null 2>&1; echo $?` -ne 0 ]; then
+          mount -t ext4 -o rw,noatime $LOOPDATA /cache/data_img
+          if [ $? -ne 0 ]; then
             OK=false
           fi
 
-          if [ `mount -t ext4 -o rw,noatime $LOOPCACHE /cache/cache_img >/dev/null 2>&1; echo $?` -ne 0 ]; then
+          mount -t ext4 -o rw,noatime $LOOPCACHE /cache/cache_img
+          if [ $? -ne 0 ]; then
             OK=false
           fi
 
           if ($OK); then
             # if mounts have succeeded, merge the images
-            if [ `cp -af /cache/cache_img/. /cache/data_img >/dev/null 2>&1; echo $?` -eq 0 ]; then
+            cp -af /cache/cache_img/. /cache/data_img
+            if [ $? -eq 0 ]; then
               log_print "merge complete"
               OVERWRITE=false
             fi
@@ -125,9 +92,6 @@ if [ ! -d "/su/bin" ]; then
       # no /data/su.img or merge failed, replace
       log_print "replacing /data/su.img with /cache/su.img"
       mv /cache/su.img /data/su.img
-
-      # make sure the new image is the right size
-      resize
     fi
 
     rm /cache/su.img
@@ -143,7 +107,8 @@ if [ ! -d "/su/bin" ]; then
 
     APKPATH=eu.chainfire.supersu-1
     for i in `ls /data/app | grep eu.chainfire.supersu- | grep -v eu.chainfire.supersu.pro`; do
-      if [ `cat /data/system/packages.xml | grep $i >/dev/null 2>&1; echo $?` -eq 0 ]; then
+      cat /data/system/packages.xml | grep $i
+      if [ $? -eq 0 ]; then
         APKPATH=$i
         break;
       fi
@@ -164,8 +129,6 @@ if [ ! -d "/su/bin" ]; then
 
     rm /data/SuperSU.apk
 
-    sync
-
     # just in case
     REBOOT=true
   fi
@@ -173,41 +136,29 @@ if [ ! -d "/su/bin" ]; then
   # sometimes we need to reboot, make it so
   if ($REBOOT); then
     log_print "rebooting"
-    if [ "$MODE" = "post-fs-data" ]; then
-      # avoid device freeze (reason unknown)
-      sh -c "sleep 5; reboot" &
-    else
-      reboot
-    fi
-    exit
+    reboot
   fi
 
-  # losetup is unreliable pre-M
-  if [ `cat /proc/mounts | grep /su >/dev/null 2>&1; echo $?` -ne 0 ]; then
+  # trigger mount, also works pre-M
+  chcon u:object_r:system_data_file:s0 /data/su.img
+  chmod 0600 /data/su.img
+  setprop sukernel.mount 1
+  sleep 1
+
+  # sometimes the trigger doesn't work, fallback to losetup
+  # losetup in turn doesn't work pre-M
+  cat /proc/mounts | grep /su >/dev/null
+  if [ "$?" -ne "0" ]; then
     loopsetup /data/su.img
     if [ ! -z "$LOOPDEVICE" ]; then
       mount -t ext4 -o rw,noatime $LOOPDEVICE /su
     fi
   fi
 
-  # trigger mount, should also work pre-M, but on post-fs-data trigger may
-  # be processed only after this script runs, causing a fallback to service launch
-  if [ `cat /proc/mounts | grep /su >/dev/null 2>&1; echo $?` -ne 0 ]; then
-    chcon u:object_r:system_data_file:s0 /data/su.img
-    chmod 0600 /data/su.img
-    setprop sukernel.mount 1
-    sleep 1
-  fi
-
-  # exit if all mount attempts have failed, script is likely to be called again
-  if [ `cat /proc/mounts | grep /su >/dev/null 2>&1; echo $?` -ne 0 ]; then
-    exit
-  fi
-
   # if other su binaries exist, route them to ours
-  mount -o bind /su/bin/su /sbin/su 2>/dev/null
-  mount -o bind /su/bin/su /system/bin/su 2>/dev/null
-  mount -o bind /su/bin/su /system/xbin/su 2>/dev/null
+  mount -o bind /su/bin/su /sbin/su
+  mount -o bind /su/bin/su /system/bin/su
+  mount -o bind /su/bin/su /system/xbin/su
 
   # poor man's overlay on /system/xbin
   if [ -d "/su/xbin_bind" ]; then
@@ -219,31 +170,4 @@ if [ ! -d "/su/bin" ]; then
 fi
 
 # start daemon
-if [ "$MODE" != "post-fs-data" ]; then
-  # if launched by service, replace this process (exec)
-  exec /su/bin/daemonsu --auto-daemon
-else
-  # if launched by exec, fork (non-exec) and wait for su.d to complete executing
-  /su/bin/daemonsu --auto-daemon
-
-  # wait for a while for su.d to complete
-  if [ -d "/su/su.d" ]; then
-    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-      # su.d finished ?
-      if [ -f "/dev/.su.d.complete" ]; then
-        break
-      fi
-
-      for j in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-        # su.d finished ?
-        if [ -f "/dev/.su.d.complete" ]; then
-          break
-        fi
-
-        # sleep 16ms if usleep supported, warm up the CPU if not
-        # 16*16*16ms=4s maximum if usleep supported, else much shorter
-        usleep 16000
-      done
-    done
-  fi
-fi
+exec /su/bin/daemonsu --auto-daemon

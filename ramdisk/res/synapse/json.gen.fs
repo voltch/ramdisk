@@ -4,7 +4,7 @@ BB=/system/xbin/busybox;
 
 cat << CTAG
 {
-    name:FS,
+    name:FileSystem,
     elements:[
 	{ SDescription:{
 		description:"For now, this just displays the status of the three main partitions.",
@@ -120,7 +120,7 @@ cat << CTAG
 		height:1
 	}},
 	{ SDescription:{
-		description:"NOTE: This process can take from 1-2 minutes and device may be UNRESPONSIVE during this time, PLEASE WAIT for the process to finish ! An error just means that some databases weren't succesful. Log output to /sdcard/prometheus/Logs/SQLite.txt."
+		description:"NOTE: This process can take from 1-2 minutes and device may be UNRESPONSIVE during this time, PLEASE WAIT for the process to finish ! An error just means that some databases weren't succesful. Log output to /sdcard/volt/Logs/SQLite.txt."
 	}},
 	{ SSpacer:{
 		height:1

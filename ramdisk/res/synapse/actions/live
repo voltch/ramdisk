@@ -1,16 +1,5 @@
 BB=/system/xbin/busybox;
-
-if [ -d "/sys/devices/battery" ]; then
-	P=/sys/devices/battery
-elif [ -d "/sys/devices/battery.54" ]; then
-	P=/sys/devices/battery.54
-elif [ -d "/sys/devices/battery.53" ]; then
-	P=/sys/devices/battery.53
-elif [ -d "/sys/devices/battery.52" ]; then
-	P=/sys/devices/battery.52
-elif [ -d "/sys/devices/battery.51" ]; then
-	P=/sys/devices/battery.51
-fi;
+P=/sys/devices/battery
 
 case $1 in
 gpu)
@@ -66,7 +55,7 @@ lux)
 actual_brightness)
   echo "$(cat /sys/class/backlight/panel/actual_brightness)"
   ;;
-Live_A72_Time)
+Live_A57_Time)
 if [ -f /sys/devices/system/cpu/cpu4/cpufreq/stats/time_in_state ]; then
   STATE="";
   CNT=0;
@@ -151,7 +140,7 @@ if [ -d /sys/devices/system/cpu/cpu4/cpufreq/interactive ]; then
   done < /sys/devices/system/cpu/cpu4/cpufreq/interactive/cpu_util 2> /dev/null;
   $BB echo "Core 4: $C4@nCore 5: $C5@nCore 6: $C6@nCore 7: $C7";
 else
-  $BB echo "A72 Interactive Offline";
+  $BB echo "A57 Interactive Offline";
 fi;
 ;;
 LiveMemory)
@@ -255,7 +244,7 @@ usb_status)
 	fi
   ;;
 dns)
-  DNS_STATUS=$(cat /res/synapse/prom/dns);
+  DNS_STATUS=$(cat /res/synapse/volt/dns);
 	if [ "$DNS_STATUS" == "0" ]; then
 		$BB echo "$(getprop net.dns1)@n$(getprop net.dns2)"
 	elif [ "$DNS_STATUS" == "1" ]; then

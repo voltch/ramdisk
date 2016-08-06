@@ -1,20 +1,9 @@
 #!/system/bin/sh
-
-if [ -d "/sys/devices/battery" ]; then
-	P=/sys/devices/battery
-elif [ -d "/sys/devices/battery.54" ]; then
-	P=/sys/devices/battery.54
-elif [ -d "/sys/devices/battery.53" ]; then
-	P=/sys/devices/battery.53
-elif [ -d "/sys/devices/battery.52" ]; then
-	P=/sys/devices/battery.52
-elif [ -d "/sys/devices/battery.51" ]; then
-	P=/sys/devices/battery.51
-fi;
+P=/sys/devices/battery
 
 cat << CTAG
 {
-    name:BATTERY,
+    name:Battery,
     elements:[
 	{ SDescription:{ 
 		description:"Device charging currents are composed of input current coming into the device (Nominal 5V) and charge current fed to the battery (Battery Charge Voltage). Charger detection divides charging cable types into several categories as described below. If charging current exceeds input load, then charging current is dynamically adjusted. For avoiding battery deterioration, charging currents of less than 0.7 Coloumb are advised; ex. 3000mAh (Capacity) * 0.7C = ~2100mA."
@@ -470,28 +459,9 @@ cat << CTAG
 	{ SSeekBar:{
 		title:"Wireless Charge Current",
 		description:"",
-		min:800, max:1500, unit:" mA", step:20,
+		min:800, max:2500, unit:" mA", step:20,
 		default:$(cat $P/wc_charge),
 		action:"generic $P/wc_charge"
-	}},
-	{ SSpacer:{
-		height:1
-	}},
-	{ SPane:{
-		title:"Store Mode",
-		description:"Enable to set MAX & MIN battery capacity limits whilst on charge."
-	}},
-	{ SSpacer:{
-		height:1
-	}},
-	{ SOptionList:{
-		title:"Enable Store Mode",
-		description:" ",
-		default:0,
-		action:"generic $P/power_supply/battery/store_mode",
-		values:{
-			0:"Disabled", 1:"Enabled"
-		}
 	}},
 	{ SSpacer:{
 		height:1

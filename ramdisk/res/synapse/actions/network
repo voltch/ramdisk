@@ -1,4 +1,4 @@
-# By UpInTheAir for SkyHigh kernels
+# By UpInTheAir for volt kernels
 
 BB=/system/xbin/busybox;
 
@@ -11,7 +11,7 @@ fi;
 
 case $1 in
 tcp_security)
-  P=/res/synapse/prom/tcp_security
+  P=/res/synapse/volt/tcp_security
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
     echo 0 > $P
@@ -62,9 +62,9 @@ tcp_security)
   fi
   ;;
 dns)
-  P=/res/synapse/prom/dns;
+  P=/res/synapse/volt/dns;
   IPTABLES=/system/bin/iptables;
-  DNS_STATUS=$(cat /res/synapse/prom/dns);
+  DNS_STATUS=$(cat /res/synapse/volt/dns);
   if [ ! -z "$2" ]; then
   if [ "$2" == Disabled ]; then
 	if [ "$DNS_STATUS" != 0 ]; then
@@ -137,7 +137,7 @@ dns)
   fi
   ;;
 gps_zone)
-  P=/res/synapse/prom/gps_zone
+  P=/res/synapse/volt/gps_zone
   var_gps="/system/etc/gps.conf";
 
 # Backup original gps.conf in case of user revert.
@@ -246,7 +246,7 @@ gps_zone)
   fi
   ;;
 wifi_passwords_save)
-  WIFI=/sdcard/prometheus/wifi;
+  WIFI=/sdcard/volt/wifi;
   [ ! -d "$WIFI" ] && mkdir -p "$WIFI";
   chmod 755 $WIFI
   P=$WIFI/wifi.txt
@@ -255,11 +255,11 @@ wifi_passwords_save)
   echo WiFi Passwords saved
   ;;
 wifi_passwords_restore)
-  if [ -f /sdcard/prometheus/wifi/wifi.txt ]; then
+  if [ -f /sdcard/volt/wifi/wifi.txt ]; then
 	P=/data/misc/wifi/wpa_supplicant.conf
 	svc wifi disable 2> /dev/null;
 	rm -f /data/misc/dhcp/dhcpcd*;
-	cat /sdcard/prometheus/wifi/wifi.txt > $P
+	cat /sdcard/volt/wifi/wifi.txt > $P
 	$BB chmod 660 $P;
 	svc wifi enable 2> /dev/null;
 	sleep 1
@@ -269,7 +269,7 @@ wifi_passwords_restore)
   fi
   ;;
 IPv6)
-  P=/res/synapse/prom/IPv6
+  P=/res/synapse/volt/IPv6
   if [ ! -z $2 ]; then
   if [ $2 == Disabled ]; then
 	echo 0 > $P
